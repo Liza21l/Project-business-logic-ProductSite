@@ -2,6 +2,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import searchValues from '../../utils/search';
 const initialState = {
+    categories: ["All", "Laptop", "Phone", "Tablet"],
+    categoriesActive: "All",
     list: [
         {
             id: 1,
@@ -9,7 +11,8 @@ const initialState = {
             price: 45999,
             color: "Space Gray",
             memory: 256,
-            diagonal: 11
+            diagonal: 11,
+            category: "Tablet"
 
         },
         {
@@ -18,7 +21,8 @@ const initialState = {
             price: 22499,
             color: "Silver",
             memory: 64,
-            diagonal: 10.9
+            diagonal: 10.9,
+            category: "Tablet"
 
         },
         {
@@ -27,7 +31,8 @@ const initialState = {
             price: 32499,
             color: "pink",
             memory: 256,
-            diagonal: 8.3
+            diagonal: 8.3,
+            category: "Tablet"
 
         },
         {
@@ -36,7 +41,8 @@ const initialState = {
             price: 23999,
             color: "Space Gray",
             memory: 256,
-            diagonal: 10.2
+            diagonal: 10.2,
+            category: "Tablet"
 
         },
         {
@@ -45,7 +51,8 @@ const initialState = {
             price: 71999,
             color: "Titanium Gray",
             memory: 1,
-            diagonal: 6.8
+            diagonal: 6.8,
+            category: "Phone"
 
         },
         {
@@ -54,7 +61,8 @@ const initialState = {
             price: 34999,
             color: "Pink",
             memory: 128,
-            diagonal: 6.1
+            diagonal: 6.1,
+            category: "Phone"
 
         },
         {
@@ -63,7 +71,8 @@ const initialState = {
             price: 30999,
             color: "Phantom Black",
             memory: 128,
-            diagonal: 6.1
+            diagonal: 6.1,
+            category: "Phone"
 
         },
         {
@@ -73,7 +82,8 @@ const initialState = {
             color: "Space Gray",
             memory: 8,
             memorySSD: 256,
-            diagonal: 13.3
+            diagonal: 13.3,
+            category: "Laptop"
 
         },
         {
@@ -83,7 +93,8 @@ const initialState = {
             color: "Silver",
             memory: 16,
             memorySSD: 512,
-            diagonal: 15.6
+            diagonal: 15.6,
+            category: "Laptop"
 
         },
         {
@@ -93,7 +104,8 @@ const initialState = {
             color: "Storm Grey",
             memory: 16,
             memorySSD: 1,
-            diagonal: 16
+            diagonal: 16,
+            category: "Laptop"
 
         },
         {
@@ -103,7 +115,8 @@ const initialState = {
             color: "Arctic Grey",
             memory: 16,
             memorySSD: 512,
-            diagonal: 15.6
+            diagonal: 15.6,
+            category: "Laptop"
 
         },
         {
@@ -112,7 +125,8 @@ const initialState = {
             price: 60499,
             color: "Black Titanium",
             memory: 256,
-            diagonal: 6.7
+            diagonal: 6.7,
+            category: "Phone"
 
         },
         {
@@ -121,7 +135,8 @@ const initialState = {
             price: 40999,
             color: "Pink",
             memory: 256,
-            diagonal:  6.1
+            diagonal:  6.1,
+            category: "Phone"
 
         },
         {
@@ -130,7 +145,8 @@ const initialState = {
             price: 20999,
             color: "White",
             memory: 64,
-            diagonal: 6.1
+            diagonal: 6.1,
+            category: "Phone"
 
         },
         {
@@ -139,7 +155,8 @@ const initialState = {
             price: 33299,
             color: "Graphite",
             memory: 128,
-            diagonal: 11
+            diagonal: 11,
+            category: "Tablet"
 
         },
         {
@@ -148,7 +165,8 @@ const initialState = {
             price: 7399,
             color: "Graphite",
             memory: 64,
-            diagonal: 8.7
+            diagonal: 8.7,
+            category: "Tablet"
 
         },
         {
@@ -157,7 +175,8 @@ const initialState = {
             price: 13099,
             color: "Blue",
             memory: 64,
-            diagonal: 10.4
+            diagonal: 10.4,
+            category: "Tablet"
 
         },
         {
@@ -166,7 +185,8 @@ const initialState = {
             price: 7999,
             color: "Grey",
             memory: 128,
-            diagonal: 11
+            diagonal: 11,
+            category: "Tablet"
 
         },
         {
@@ -175,7 +195,8 @@ const initialState = {
             price: 34899,
             color: "Blue",
             memory: 128,
-            diagonal: 6.1
+            diagonal: 6.1,
+            category: "Phone"
 
         },
         {
@@ -185,12 +206,14 @@ const initialState = {
             color: "Silver",
             memory: 32,
             memorySSD: 1,
-            diagonal: 16.2
+            diagonal: 16.2,
+            category: "Laptop"
 
         },
 
     ],
-    searchList:[],
+    filterList:[],
+    basketList: [],
     searchValue:""
 }
 
@@ -200,19 +223,40 @@ const productSlice = createSlice ({
     initialState,
     reducers: {
         changeSearch: (state, action) => {
-            state.searchValue = action.payload
-            if (action.payload.length === 0) {
-                state.searchList = []
-            } else {
-                state.searchList = [
-                    ...state.list.filter(item => searchValues(item.name, action.payload))
+            state.searchValue = action.payload;
+        },
+        changeCategory: (state, action) => { 
+            state.categoryActive = action.payload
+            if (action.payload.categories === "All") {
+                state.filterList = [
+                    ...state.list
                 ]
+            } else {
+                state.filterList = state.list.filter((el) => el.category === action.payload)
             }
+        },
+        addBasket: (state, action) => {
+            let isIncludeBasket = false
+            state.basketList.forEach(item => {
+                if (item.id === action.payload){
+                    isIncludeBasket = true
+                    item.count += 1
+                }
+                if (!isIncludeBasket){
+                    state.basketList = [
+                        ...state.basketList,
+                        {
+                            id: action.payload ,
+                            count: 1
+                        }
+                    ]
+                }
+            })
         }
         
     }
 })
 
-export const { changeSearch} = productSlice.actions
+export const { changeSearch, changeCategory, addBasket} = productSlice.actions
 
 export default productSlice.reducer

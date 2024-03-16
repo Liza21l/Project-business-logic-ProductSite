@@ -3,7 +3,7 @@ const searchValues = (text, searchText) => {
     const textLower = text.toLowerCase();
     const searchLower = searchText.toLowerCase();
     console.log(textLower, searchLower);
-    if (searchLower.length > textLower) {
+    if (searchLower.length > textLower.length) {
       return false;
     } else {
       for (let i = 0; i <= textLower.length - 1; i++) {
